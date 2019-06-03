@@ -24,7 +24,7 @@ public class LinkedList<E> extends AbstractList<E> {
 
     @Override
     public E get(int index) {
-        if (size == 0){
+        if (size == 0) {
             throw new IllegalStateException(EMPTY_COLLECTION_EXCEPTION);
         }
         indexValidate(index);
@@ -34,7 +34,7 @@ public class LinkedList<E> extends AbstractList<E> {
 
     @Override
     public E set(int index, E element) {
-        if (size == 0){
+        if (size == 0) {
             throw new IllegalStateException(EMPTY_COLLECTION_EXCEPTION);
         }
         indexValidate(index);
@@ -43,13 +43,13 @@ public class LinkedList<E> extends AbstractList<E> {
         return result;
     }
 
-    private Node<E> getNode(int index){
-        if (size == 0){
+    private Node<E> getNode(int index) {
+        if (size == 0) {
             throw new IllegalStateException(EMPTY_COLLECTION_EXCEPTION);
         }
         indexValidate(index);
         Node<E> nodeStep = head;
-        for (int i = 0; i<index; i++){
+        for (int i = 0; i < index; i++) {
             nodeStep = nodeStep.next;
         }
         return nodeStep;
@@ -57,14 +57,14 @@ public class LinkedList<E> extends AbstractList<E> {
 
     @Override
     public E remove(int index) {
-        if (size == 0){
+        if (size == 0) {
             throw new IllegalStateException(EMPTY_COLLECTION_EXCEPTION);
         }
         indexValidate(index);
         Iterator<E> iterator = getIterator();
         int i = 0;
         E element;
-        while (i != index){
+        while (i != index) {
             iterator.getNext();
             i++;
         }
@@ -75,16 +75,16 @@ public class LinkedList<E> extends AbstractList<E> {
 
     @Override
     public void trim() {
-        if (size == 0){
+        if (size == 0) {
             throw new IllegalStateException(EMPTY_COLLECTION_EXCEPTION);
         }
-        if (head.element == null){
+        if (head.element == null) {
             clear();
         } else {
             int index = 1;
             Node<E> i = head;
-            for (; i.next != null; i = i.next){
-                if (i.next.element == null){
+            for (; i.next != null; i = i.next) {
+                if (i.next.element == null) {
                     i.next = null;
                     size = index;
                     return;
@@ -96,20 +96,20 @@ public class LinkedList<E> extends AbstractList<E> {
 
     @Override
     public int add(E element) {
-        if (maxSize > -1 && size == maxSize){
+        if (maxSize > -1 && size == maxSize) {
             throw new IllegalStateException(FULL_COLLECTION_EXCEPTION);
         }
         int index = 0;
-        if (head == null){
+        if (head == null) {
             head = new Node<>(element, null, null);
             size++;
             return index;
         }
-        for (Node<E> node = head; node!=null; node=node.next){
+        for (Node<E> node = head; node != null; node = node.next) {
             int i = comparator.compare(element, node.element);
-            if (i <= 0){
-                if (node.prev == null){
-                    Node<E> next =head;
+            if (i <= 0) {
+                if (node.prev == null) {
+                    Node<E> next = head;
                     head = new Node<>(element, next, null);
                     next.prev = head;
                     size++;
@@ -123,7 +123,7 @@ public class LinkedList<E> extends AbstractList<E> {
             }
             index++;
         }
-        Node<E> lastNode = getNode(size-1);
+        Node<E> lastNode = getNode(size - 1);
         lastNode.next = new Node<>(element, null, lastNode);
         size++;
         return ++index;
@@ -132,14 +132,14 @@ public class LinkedList<E> extends AbstractList<E> {
     @Override
     public void addAll(Collection<? extends E> collection) {
         Iterator<? extends E> iterator = collection.getIterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             add(iterator.getNext());
         }
     }
 
     @Override
     public void addAll(E[] elements) {
-        for (E element : elements){
+        for (E element : elements) {
             add(element);
         }
     }
@@ -153,8 +153,8 @@ public class LinkedList<E> extends AbstractList<E> {
     @Override
     public int find(E element) {
         int index = 0;
-        for (Node<E> i = head; i!=null; i=i.next){
-            if (comparator.compare(element, i.element) == 0){
+        for (Node<E> i = head; i != null; i = i.next) {
+            if (comparator.compare(element, i.element) == 0) {
                 return index;
             }
             index++;
@@ -165,11 +165,11 @@ public class LinkedList<E> extends AbstractList<E> {
     @Override
     @SuppressWarnings("unchecked")
     public E[] toArray(E[] elements) {
-        if (size > elements.length){
+        if (size > elements.length) {
             elements = (E[]) Array.newInstance(elements.getClass().getComponentType(), size);
         }
         Node<E> nodeStep = head;
-        for (int i = 0; i< size; i++){
+        for (int i = 0; i < size; i++) {
             elements[i] = nodeStep.element;
             nodeStep = nodeStep.next;
         }
@@ -179,18 +179,18 @@ public class LinkedList<E> extends AbstractList<E> {
     @Override
     public void setMaxSize(int size) {
         this.maxSize = size;
-        if (this.size > size){
+        if (this.size > size) {
             this.size = size;
-            getNode(size-1).next = null;
+            getNode(size - 1).next = null;
         }
     }
 
-    private void sort(){
-        for (int i = size; i != 0; i--){
+    private void sort() {
+        for (int i = size; i != 0; i--) {
             Node<E> stepNode = head;
-            for (int j = 1; j < i; j++){
+            for (int j = 1; j < i; j++) {
                 int compareRes = comparator.compare(stepNode.element, stepNode.next.element);
-                if (compareRes > 0){
+                if (compareRes > 0) {
                     E element = stepNode.next.element;
                     stepNode.next.element = stepNode.element;
                     stepNode.element = element;
@@ -205,7 +205,20 @@ public class LinkedList<E> extends AbstractList<E> {
         return new LinkedIterator();
     }
 
-    private class Node<E>{
+    public void reversList() {
+        Node<E> currentNode = head;
+        while (currentNode.next != null) {
+            Node<E> nextNode = currentNode.next;
+            currentNode.next = currentNode.prev;
+            currentNode.prev = nextNode;
+            currentNode = nextNode;
+        }
+        currentNode.next = currentNode.prev;
+        currentNode.prev = null;
+        head = currentNode;
+    }
+
+    private class Node<E> {
         E element;
         Node<E> next;
         Node<E> prev;
@@ -217,7 +230,7 @@ public class LinkedList<E> extends AbstractList<E> {
         }
     }
 
-    private class LinkedIterator implements Iterator<E>{
+    private class LinkedIterator implements Iterator<E> {
         private Node<E> lastReturned;
         private Node<E> next = head;
         private int nextIndex;
@@ -225,7 +238,7 @@ public class LinkedList<E> extends AbstractList<E> {
 
         @Override
         public E getNext() {
-            if (!hasNext()){
+            if (!hasNext()) {
                 throw new IllegalArgumentException();
             }
             lastReturned = next;
@@ -236,8 +249,8 @@ public class LinkedList<E> extends AbstractList<E> {
 
         @Override
         public boolean hasNext() {
-            if (nextIndex == size){
-                if (neededSort){
+            if (nextIndex == size) {
+                if (neededSort) {
                     sort();
                 }
                 return false;
@@ -247,18 +260,18 @@ public class LinkedList<E> extends AbstractList<E> {
 
         @Override
         public void remove() {
-            if (lastReturned == null){
+            if (lastReturned == null) {
                 throw new IllegalStateException(REMOVE_EXCEPTION);
             }
-            if (lastReturned.prev == null){
+            if (lastReturned.prev == null) {
                 head = lastReturned.next;
                 head.prev = null;
-            }else {
-                if (lastReturned.next == null){
+            } else {
+                if (lastReturned.next == null) {
                     lastReturned.prev.next = null;
-                }else {
-                    lastReturned.prev.next=lastReturned.next;
-                    lastReturned.next.prev=lastReturned.prev;
+                } else {
+                    lastReturned.prev.next = lastReturned.next;
+                    lastReturned.next.prev = lastReturned.prev;
                 }
             }
             lastReturned = null;
@@ -268,7 +281,7 @@ public class LinkedList<E> extends AbstractList<E> {
 
         @Override
         public int addBefore(E element) {
-            if (lastReturned.prev != null){
+            if (lastReturned.prev != null) {
                 Node<E> node = new Node<>(element, lastReturned, lastReturned.prev);
                 lastReturned.prev = node;
                 node.prev.next = node;
@@ -285,7 +298,7 @@ public class LinkedList<E> extends AbstractList<E> {
 
         @Override
         public int addAfter(E element) {
-            if (lastReturned.next != null){
+            if (lastReturned.next != null) {
                 Node<E> node = new Node<>(element, lastReturned.next, lastReturned);
                 lastReturned.next = node;
                 node.next.prev = node;
