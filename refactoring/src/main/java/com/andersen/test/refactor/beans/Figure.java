@@ -1,13 +1,16 @@
 package com.andersen.test.refactor.beans;
 
+import com.andersen.test.refactor.interfaces.Place;
+import com.andersen.test.refactor.interfaces.Position;
+
 public class Figure {
     protected Position position;
-    protected int[] field;
+    protected Place field;
 
     public Figure() {
     }
 
-    public Figure(Position position, int[] field) {
+    public Figure(FlatnessPosition position, Place field) {
         this.position = position;
         this.field = field;
     }
@@ -20,11 +23,11 @@ public class Figure {
         this.position = position;
     }
 
-    public int[] getField() {
+    public Place getField() {
         return field;
     }
 
-    public void setField(int[] field) {
+    public void setField(Place field) {
         this.field = field;
     }
 }

@@ -1,12 +1,12 @@
 package com.andersen.test.refactor.services;
 
-import com.andersen.test.refactor.beans.Position;
+import com.andersen.test.refactor.interfaces.Position;
 
 public enum Orientation {
     NORTH {
         @Override
         public void moveForwards(Position position) {
-            position.setY(position.getY() + 1);
+            position.goUp();
         }
 
         @Override
@@ -17,7 +17,7 @@ public enum Orientation {
     SOUTH {
         @Override
         public void moveForwards(Position position) {
-            position.setY(position.getY() - 1);
+            position.goDown();
         }
 
         @Override
@@ -28,7 +28,7 @@ public enum Orientation {
     WEST {
         @Override
         public void moveForwards(Position position) {
-            position.setX(position.getX() - 1);
+            position.goLeft();
         }
 
         @Override
@@ -39,7 +39,7 @@ public enum Orientation {
     EAST {
         @Override
         public void moveForwards(Position position) {
-            position.setX(position.getX() + 1);
+            position.goRight();
         }
 
         @Override
