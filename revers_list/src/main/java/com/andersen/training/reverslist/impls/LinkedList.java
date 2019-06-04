@@ -1,5 +1,6 @@
 package com.andersen.training.reverslist.impls;
 
+import com.andersen.training.reverslist.exceptions.EmptyCollectionException;
 import com.andersen.training.reverslist.interfaces.Collection;
 import com.andersen.training.reverslist.interfaces.Iterator;
 
@@ -206,6 +207,9 @@ public class LinkedList<E> extends AbstractList<E> {
     }
 
     public void reversList() {
+        if(size < 1) {
+            throw new EmptyCollectionException(EMPTY_COLLECTION_EXCEPTION);
+        }
         Node<E> currentNode = head;
         while (currentNode.next != null) {
             Node<E> nextNode = currentNode.next;
