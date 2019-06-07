@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class Test {
     private static Logger logger = Logger.getLogger(Test.class.getName());
     private static volatile int count = -1;
+    private static boolean isInterrurted = false;
 
     public static void main(String[] args) throws TestException, InterruptedException {
         Set<Double> res = new HashSet<>();
@@ -37,7 +39,9 @@ public class Test {
                             }
                         }
                     } catch (TestException e) {
+                        logger.log(Level.WARNING, e.getMessage(), e);
                         count = TestConsts.N;
+                        isInterrurted = true;
                     }
                 }
             });
@@ -48,9 +52,11 @@ public class Test {
             thread.join();
         }
         long takeTime = System.currentTimeMillis() - start;
-        System.out.println("take time: " + takeTime);
+        if (!isInterrurted) {
+            System.out.println("take time: " + takeTime);
+            System.out.println(res);
+        }
 
-        System.out.println(res);
     }
 
 }
