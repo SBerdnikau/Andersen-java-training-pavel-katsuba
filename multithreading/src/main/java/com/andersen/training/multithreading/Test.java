@@ -1,10 +1,8 @@
 package com.andersen.training.multithreading;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Необходимо уменьшить время выполнения вычислений.
@@ -14,44 +12,52 @@ import java.util.concurrent.Callable;
  * остановить)
  */
 public class Test {
-    private static volatile int count;
-    private static volatile boolean isInterrupt = false;
+    private static Logger logger = Logger.getLogger(Test.class.getName());
+    private static volatile int threadCount;
+    private static List<Thread> threads = new ArrayList<>();
+    private static Thread currentThread;
 
-    public static void main(String[] args) throws TestException {
+    public static void main(String[] args) throws TestException, InterruptedException {
         Set<Double> res = new HashSet<>();
-        Queue<Callable<Set<Double>>> tasks = new LinkedList<>();
+        currentThread = Thread.currentThread();
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < TestConsts.N; i++) {
+            if(threadCount == TestConsts.MAX_THREADS) {
+                try {
+                    res.wait();
+                } catch (InterruptedException e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                    throw new InterruptedException(e.getMessage());
+                }
+            }
             Executor task = new Executor(i);
-            tasks.add(task);
-        }
-        for (int i = 0; i < TestConsts.MAX_THREADS; i++) {
             Thread thread = new Thread(() -> {
-                while (!isInterrupt) {
-                    synchronized (tasks) {
-                        Callable<Set<Double>> nextTask = tasks.poll();
-                        if (nextTask == null) {
-                            Thread.currentThread().interrupt();
-                        } else {
-                            try {
-                                res.addAll(nextTask.call());
-                                count++;
-                            } catch (Exception e) {
-                                isInterrupt = true;
-                            }
-                        }
+                try {
+                    synchronized (res) {
+                        res.addAll(task.call());
+                        threadCount++;
+                        res.notify();
                     }
+                } catch (Exception e) {
+                    logger.log(Level.WARNING, e.getMessage(), e);
+                    Test.interrupt();
                 }
             });
             thread.start();
+            threads.add(thread);
         }
-        while (count < TestConsts.N) ;
-        isInterrupt = true;
+        for (Thread thread : threads) {
+            thread.join();
+        }
         long takeTime = System.currentTimeMillis() - start;
         System.out.println("take time: " + takeTime);
 
         System.out.println(res);
+    }
+
+    public static void interrupt() {
+        currentThread.interrupt();
     }
 
 }
