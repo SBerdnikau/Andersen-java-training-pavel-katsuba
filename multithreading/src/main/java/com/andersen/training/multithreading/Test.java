@@ -1,8 +1,10 @@
 package com.andersen.training.multithreading;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.FutureTask;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
  * Необходимо уменьшить время выполнения вычислений.
@@ -12,40 +14,44 @@ import java.util.concurrent.FutureTask;
  * остановить)
  */
 public class Test {
+    private static volatile int count;
+    private static volatile boolean isInterrupt = false;
 
     public static void main(String[] args) throws TestException {
         Set<Double> res = new HashSet<>();
-        Queue<FutureTask> tasks = new ConcurrentLinkedQueue<>();
-        List<Thread> threads = new ArrayList<>();
-        List<FutureTask> futureTasks = new ArrayList<>();
+        Queue<Callable<Set<Double>>> tasks = new LinkedList<>();
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < TestConsts.N; i++) {
-            FutureTask<Object> futureTask = new FutureTask<>(new Executor(res, i), null);
-            tasks.add(futureTask);
-            futureTasks.add(futureTask);
+            Executor task = new Executor(i);
+            tasks.add(task);
         }
         for (int i = 0; i < TestConsts.MAX_THREADS; i++) {
             Thread thread = new Thread(() -> {
-                while (!Thread.currentThread().isInterrupted()) {
-                    FutureTask nextTask = tasks.poll();
-                    if (nextTask != null) {
-                        nextTask.run();
+                while (!isInterrupt) {
+                    synchronized (tasks) {
+                        Callable<Set<Double>> nextTask = tasks.poll();
+                        if (nextTask == null) {
+                            Thread.currentThread().interrupt();
+                        } else {
+                            try {
+                                res.addAll(nextTask.call());
+                                count++;
+                            } catch (Exception e) {
+                                isInterrupt = true;
+                            }
+                        }
                     }
                 }
             });
             thread.start();
-            threads.add(thread);
         }
-        for (FutureTask futureTask : futureTasks) {
-            while (!futureTask.isDone()) ;
-        }
-        for (Thread thread : threads) {
-            thread.interrupt();
-        }
+        while (count < TestConsts.N) ;
+        isInterrupt = true;
         long takeTime = System.currentTimeMillis() - start;
         System.out.println("take time: " + takeTime);
 
         System.out.println(res);
     }
+
 }
