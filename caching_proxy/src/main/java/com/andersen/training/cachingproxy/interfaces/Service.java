@@ -1,8 +1,8 @@
 package com.andersen.training.cachingproxy.interfaces;
 
-import com.andersen.training.cachingproxy.annotations.Cacheble;
+import com.andersen.training.cachingproxy.annotations.Caching;
 
 public interface Service {
-    @Cacheble
+    @Caching(key = "OK")
     String doHardWork(String param);
 }

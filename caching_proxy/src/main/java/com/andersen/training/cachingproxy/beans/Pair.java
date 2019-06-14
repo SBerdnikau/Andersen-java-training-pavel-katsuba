@@ -1,29 +1,50 @@
 package com.andersen.training.cachingproxy.beans;
 
-public class Pair {
-    private final String result;
-    private final String args;
+import java.io.Serializable;
 
-    public Pair(String result, String args) {
+public class Pair<T> implements Serializable {
+    private final T result;
+    private final Object[] args;
+
+    public Pair(T result, Object[] args) {
         this.result = result;
         this.args = args;
     }
 
-    public Pair(String[] arr) {
-        this.result = arr[1];
-        this.args = arr[0];
-    }
-
-    public String getResult() {
+    public T getResult() {
         return result;
     }
 
-    public String getArgs() {
+    public Object[] getArgs() {
         return args;
     }
 
     @Override
-    public String toString() {
-        return args + ":" + result;
+    public int hashCode() {
+        int h = 31;
+        for (Object arg : args) {
+            h = h + h * arg.hashCode();
+        }
+        return h;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Pair)) {
+            return false;
+        }
+        Pair pair = (Pair) obj;
+        if (args.length != pair.getArgs().length) {
+            return false;
+        }
+        for (int i = 0; i < args.length; i++) {
+            if (!args[i].equals(pair.getArgs()[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 }
